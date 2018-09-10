@@ -1,4 +1,4 @@
-﻿Shader "Unlit/FakeInterior"
+Shader "Unlit/FakeInterior"
 {
 	Properties
 	{
@@ -42,6 +42,10 @@
 			sampler2D _Sidewalls;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+			float4 _Ceiling_ST;
+			float4 _Floor_ST;
+			float4 _Backwall_ST;
+			float4 _Sidewalls_ST;
 			
 			v2f vert (appdata v)
 			{
@@ -68,15 +72,16 @@
 				float2 intersectionXZ = (i.cameraInObjectSpace + rayFractions.y * cameraToFragment).xz;
 				float2 intersectionZY = (i.cameraInObjectSpace + rayFractions.x * cameraToFragment).zy;
 
-				fixed4 ceilingColor = tex2D(_Ceiling, intersectionXZ);
-				fixed4 floorColor = tex2D(_Floor, intersectionXZ);
+				fixed4 ceilingColor = tex2D(_Ceiling, TRANSFORM_TEX(intersectionXZ, _Ceiling));
+				fixed4 floorColor = tex2D(_Floor, TRANSFORM_TEX(intersectionXZ, _Floor));
 
 				// Is the camera looking up at the fragment? Then we hit the ceiling.
 				// Otherwise, we hit the floor.
 				fixed4 floorOrCeilingColor = lerp(floorColor, ceilingColor, step(0, cameraToFragment.y));
 
-				fixed4 backWallColor = tex2D(_Backwall, intersectionXY);
-				fixed4 sideWallColor = tex2D(_Sidewalls, intersectionZY);
+                
+				fixed4 backWallColor = tex2D(_Backwall, TRANSFORM_TEX(intersectionXY, _Backwall));
+				fixed4 sideWallColor = tex2D(_Sidewalls, TRANSFORM_TEX(intersectionZY, _Sidewalls));
 
 				float x_vs_z = step(rayFractions.x, rayFractions.z);
 				fixed4 wallColor = lerp(backWallColor, sideWallColor, x_vs_z);
