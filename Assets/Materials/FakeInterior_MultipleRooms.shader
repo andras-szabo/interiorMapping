@@ -47,7 +47,14 @@
 			sampler2D _Leftwall;
 			sampler2D _Rightwall;
 			sampler2D _MainTex;
+			
 			float4 _MainTex_ST;
+			float4 _Floor_ST;
+			float4 _Ceiling_ST;
+			float4 _Backwall_ST;
+			float4 _Leftwall_ST;
+			float4 _Rightwall_ST;
+
 			float _HDivision;
 			float _VDivision;
 			
@@ -80,21 +87,21 @@
 
 				float3 rayFractions = (wallPositions - i.cameraInObjectSpace) / cameraToFragment;
 
-				float2 intersectionXY = (i.cameraInObjectSpace + rayFractions.z * cameraToFragment).xy * float2(roomCount.x, roomCount.y);
+				float2 intersectionXY = (i.cameraInObjectSpace + rayFractions.z * cameraToFragment).xy * roomCount;
 				float2 intersectionXZ = (i.cameraInObjectSpace + rayFractions.y * cameraToFragment).xz * float2(roomCount.x, 1);
 				float2 intersectionZY = (i.cameraInObjectSpace + rayFractions.x * cameraToFragment).zy * float2(1, roomCount.y);
 
-				fixed4 ceilingColor = tex2D(_Ceiling, intersectionXZ);
-				fixed4 floorColor = tex2D(_Floor, intersectionXZ);
+				fixed4 ceilingColor = tex2D(_Ceiling, TRANSFORM_TEX(intersectionXZ, _Ceiling));
+				fixed4 floorColor = tex2D(_Floor, TRANSFORM_TEX(intersectionXZ, _Floor));
 
 				// Is the camera looking up at the fragment? Then we hit the ceiling.
 				// Otherwise, we hit the floor.
 				fixed4 floorOrCeilingColor = lerp(floorColor, ceilingColor, step(0, cameraToFragment.y));
 
-				fixed4 backWallColor = tex2D(_Backwall, intersectionXY);
+				fixed4 backWallColor = tex2D(_Backwall, TRANSFORM_TEX(intersectionXY, _Backwall));
 				
-				fixed4 leftWallColor = tex2D(_Leftwall, intersectionZY);
-				fixed4 rightWallColor = tex2D(_Rightwall, float2(1 - intersectionZY.x, intersectionZY.y));
+				fixed4 leftWallColor = tex2D(_Leftwall, TRANSFORM_TEX(intersectionZY, _Leftwall));
+				fixed4 rightWallColor = tex2D(_Rightwall, TRANSFORM_TEX(float2(1 - intersectionZY.x, intersectionZY.y), _Rightwall));
 				fixed4 sideWallColor = lerp(leftWallColor, rightWallColor, step(0, cameraToFragment.x));
 
 				float x_vs_z = step(rayFractions.x, rayFractions.z);

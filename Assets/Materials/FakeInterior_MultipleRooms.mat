@@ -82,7 +82,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HDivision: 1
+    - _HDivision: 2
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -91,7 +91,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _VDivision: 1
+    - _VDivision: 2.25
     - _WallFreq: 2
     - _ZWrite: 1
     m_Colors:
